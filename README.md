@@ -1,3 +1,3 @@
-# Flutter Shoe App UI free source code
+# Flutter Shoe App UI 
 
 <img width="300" alt="E-Commerce Mockup" src="./images/shop.png">
