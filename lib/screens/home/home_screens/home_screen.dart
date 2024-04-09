@@ -1,7 +1,12 @@
+import 'dart:ffi';
+
 import 'package:ecommerce_app_isaatech/components/rating_widget.dart';
 import 'package:ecommerce_app_isaatech/models/product.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -11,6 +16,7 @@ import '/components/main_page_product_card.dart';
 import '/constants/dummy_data.dart';
 import '/constants/images.dart';
 
+//get unique brand
 List<String> getUniqueElements(List<Product> list) {
   List<String> uniqueList = [];
 
@@ -31,23 +37,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Product> pr = products;
-
-  List<String> catogery = getUniqueElements(products);
-
-  List<bool> check = List.generate(products.length, (index) => false).toList();
+  late List<Product> product = [];
+  late List<Product> pr = product;
+  late List<String> catogery = getUniqueElements(product);
+  bool isLoading = true;
+  late List<bool> check =
+      List.generate(product.length, (index) => false).toList();
   void updateState(bool check_ans, String name) {
     if (check_ans == false) {
       // var br = check_ans;
       setState(() => {
-            if (products.length == pr.length)
-              {pr = products.where((s) => !s.brand.contains(name)).toList()}
+            if (product.length == pr.length)
+              {pr = product.where((s) => !s.brand.contains(name)).toList()}
             else if (check.where((c) => c == true).length > 1)
               {pr = pr.where((s) => !s.brand.contains(name)).toList()}
             else
               {
                 pr.addAll(
-                    products.where((s) => !s.brand.contains(name)).toList())
+                    product.where((s) => !s.brand.contains(name)).toList())
               }
           });
       List<bool> val = [...check];
@@ -57,10 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
       var br = name;
 
       setState(() => {
-            if (products.length == pr.length)
-              {pr = products.where((s) => s.brand.contains(br)).toList()}
+            if (product.length == pr.length)
+              {pr = product.where((s) => s.brand.contains(br)).toList()}
             else
-              {pr.addAll(products.where((s) => s.brand.contains(br)).toList())}
+              {pr.addAll(product.where((s) => s.brand.contains(br)).toList())}
           });
 
       List<bool> val = [...check];
@@ -77,23 +84,63 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final response = await http
+        .get(Uri.parse('https://sneaker-api-phi.vercel.app/getallsneaker'));
+    if (response.statusCode == 200) {
+      setState(() {
+        List<dynamic> responseData = jsonDecode(response.body);
+        print(responseData);
+        List<Product> fetchedProducts = responseData.map((data) {
+          String doubleValue = data['average_price'].toString();
+          // if (data['average_price'] > 0)
+          return Product(
+            shoeName: data['shoeName'],
+            brand: data['brand'],
+            average_price: double.tryParse(doubleValue) ?? 0.0,
+            description: data['description'],
+            thumbnail: [data['thumbnail']],
+            rating: data['rating'] ?? [],
+            gender: data['gender'],
+          );
+        }).toList();
+        product = fetchedProducts;
+        setState(() {
+          isLoading = false;
+        });
+      });
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SearchBar(toggleVisibility: toggleVisibility, isVisible: isVisible),
-        8.heightBox,
-        CategoriesCatalog(
-            catogery: catogery,
-            check: check,
-            updateState: updateState,
-            isVisible: isVisible),
-        ProductPageView(pr: pr),
-        12.heightBox,
-        const MostPopularTitleText(),
-        12.heightBox,
-        const PopularProductCard(),
-      ],
-    ).py(8);
+    return isLoading // Check loading state
+        ? Center(child: CircularProgressIndicator())
+        : Column(
+            children: [
+              SearchBar(
+                  toggleVisibility: toggleVisibility, isVisible: isVisible),
+              8.heightBox,
+              CategoriesCatalog(
+                  catogery: catogery,
+                  check: check,
+                  updateState: updateState,
+                  isVisible: isVisible),
+              ProductPageView(pr: pr),
+              12.heightBox,
+              const MostPopularTitleText(),
+              12.heightBox,
+              const PopularProductCard(),
+            ],
+          ).py(8);
   }
 }
 
@@ -185,7 +232,7 @@ class PopularProductCard extends StatelessWidget {
 }
 
 class ProductPageView extends StatefulWidget {
-  List<Product> pr = products;
+  final List<Product> pr;
   ProductPageView({Key? key, required this.pr}) : super(key: key);
 
   @override
@@ -300,7 +347,8 @@ class _CategoriesCatalogState extends State<CategoriesCatalog> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
       height: !widget.isVisible ? 0 : 100.0,
       child: widget.isVisible
           ? Expanded(

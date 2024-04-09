@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:velocity_x/velocity_x.dart';
-
+import 'dart:math';
 import '../components/buttons.dart';
 import '../models/product.dart';
 
@@ -27,7 +27,7 @@ class _ProductPageState extends State<ProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product.name),
+        title: Text(widget.product.shoeName),
         actions: [
           const BagButton(
             numberOfItemsPurchased: 3,
@@ -55,7 +55,7 @@ class _ProductPageState extends State<ProductPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   'Description'.text.semiBold.lg.make(),
-                  const RatingWidget(rating: 4)
+                  RatingWidget(rating: widget.product.rating.length.toDouble())
                 ],
               ).px(24),
               widget.product.description.text.lg.make().py(12).px(24),
@@ -104,7 +104,7 @@ class _ProductPageState extends State<ProductPage> {
                         ),
                         const Spacer(),
                         'Total: '.text.xl.make(),
-                        '\$${widget.product.price * _quantity}'
+                        '\$${widget.product.average_price * _quantity}'
                             .text
                             .semiBold
                             .xl
@@ -143,13 +143,21 @@ class MainProductPageProductCard extends StatefulWidget {
 
 class _MainProductPageProductCardState
     extends State<MainProductPageProductCard> {
-  int _selectedColor = 0;
+  // int _selectedColor = 0;
   int _selectedImageIndex = 0;
 
-  void _updateColor(int index) {
-    setState(() {
-      _selectedColor = index;
-    });
+  // void _updateColor(int index) {
+  //   setState(() {
+  //     _selectedColor = index;
+  //   });
+  // }
+  Color generateRandomLightColor() {
+    // Generate random RGB values within the range of 150 to 255
+    int red = Random().nextInt(106) + 150;
+    int green = Random().nextInt(106) + 150;
+    int blue = Random().nextInt(106) + 150;
+
+    return Color.fromARGB(255, red, green, blue);
   }
 
   @override
@@ -182,7 +190,7 @@ class _MainProductPageProductCardState
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               decoration: BoxDecoration(
-                  color: widget.product.productColors[_selectedColor],
+                  color: Colors.white10,
                   borderRadius: BorderRadius.circular(24)),
               // margin: const EdgeInsets.only(
               //     left: 25, right: 25, top: 24, bottom: 32),
@@ -192,14 +200,14 @@ class _MainProductPageProductCardState
                   SizedBox(
                     height: 340,
                     child: PageView.builder(
-                      itemCount: widget.product.productImages.length,
+                      itemCount: widget.product.thumbnail.length,
                       onPageChanged: (newIndex) => setState(() {
                         _selectedImageIndex = newIndex;
                       }),
                       itemBuilder: (context, index) => AspectRatio(
                         aspectRatio: 1,
-                        child: Image.asset(
-                          widget.product.productImages[_selectedImageIndex],
+                        child: Image.network(
+                          widget.product.thumbnail[_selectedImageIndex],
                         ).p(24),
                       ),
                     ),
@@ -241,7 +249,7 @@ class _MainProductPageProductCardState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: widget.product.name.text
+                      child: widget.product.average_price.text
                           .size(24)
                           .semiBold
                           .maxLines(2)
@@ -253,7 +261,7 @@ class _MainProductPageProductCardState
                       width: 90,
                       child: PrimaryShadowedButton(
                         onPressed: () {},
-                        child: '\$${widget.product.price}'
+                        child: '\$${widget.product.average_price}'
                             .text
                             .white
                             .makeCentered(),
@@ -266,11 +274,11 @@ class _MainProductPageProductCardState
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ColorSelector(
-                      colors: widget.product.productColors,
-                      selectedIndex: _selectedColor,
-                      updateContainerColor: _updateColor,
-                    ),
+                    // ColorSelector(
+                    //   colors: widget.product.productColors,
+                    //   selectedIndex: _selectedColor,
+                    //   updateContainerColor: _updateColor,
+                    // ),
                     'Size:'.text.gray500.make(),
                     8.widthBox,
                     SizedBox(

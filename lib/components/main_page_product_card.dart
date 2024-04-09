@@ -5,6 +5,7 @@ import 'package:ecommerce_app_isaatech/screens/product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'dart:math';
 
 class HomeScreenProductCard extends StatefulWidget {
   const HomeScreenProductCard(
@@ -40,6 +41,15 @@ class _HomeScreenProductCardState extends State<HomeScreenProductCard>
   void dispose() {
     _imageAnimationController.dispose();
     super.dispose();
+  }
+
+  Color generateRandomLightColor() {
+    // Generate random RGB values within the range of 150 to 255
+    int red = Random().nextInt(106) + 150;
+    int green = Random().nextInt(106) + 150;
+    int blue = Random().nextInt(106) + 150;
+
+    return Color.fromARGB(255, red, green, blue);
   }
 
   @override
@@ -79,11 +89,11 @@ class _HomeScreenProductCardState extends State<HomeScreenProductCard>
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                      color: widget.product.productColors[0],
+                      color: Colors.white10,
                       boxShadow: [
                         widget.isCurrentInView
-                            ? BoxShadow(
-                                color: Colors.grey.shade200,
+                            ? const BoxShadow(
+                                color: Colors.white24,
                                 offset: const Offset(0, 8),
                                 spreadRadius: 1,
                                 blurRadius: 8)
@@ -103,8 +113,8 @@ class _HomeScreenProductCardState extends State<HomeScreenProductCard>
                             angle: widget.isCurrentInView
                                 ? (_imageAnimationController.value * -0.5)
                                 : 0,
-                            child: Image.asset(
-                              widget.product.productImages[0],
+                            child: Image.network(
+                              widget.product.thumbnail[0],
                             ).p(16)),
                       ),
                       Positioned(
@@ -131,7 +141,7 @@ class _HomeScreenProductCardState extends State<HomeScreenProductCard>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: widget.product.name.text
+                      child: widget.product.shoeName.text
                           .size(21)
                           .semiBold
                           .maxLines(2)
@@ -139,7 +149,8 @@ class _HomeScreenProductCardState extends State<HomeScreenProductCard>
                           .make(),
                     ),
                     12.widthBox,
-                    RatingWidget(rating: widget.product.rating),
+                    RatingWidget(
+                        rating: widget.product.rating.length.toDouble()),
                   ],
                 ),
                 Row(
@@ -156,7 +167,7 @@ class _HomeScreenProductCardState extends State<HomeScreenProductCard>
                             .softWrap(true)
                             .make()
                             .py(4),
-                        '\$${widget.product.price}'
+                        '\$${widget.product.average_price}'
                             .text
                             .size(15)
                             .semiBold

@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 
+// class rating {
+//   String email;
+//   double raiting;
+// }
+
 class Product {
-  String name;
+  String shoeName;
   String brand;
   String description;
-  double price;
-  double rating;
-  List<Color> productColors;
-  List<String> productImages;
+  double average_price;
+  List rating;
+  String gender;
+  // List<Color> productColors;
+  List<String> thumbnail;
 
   Product(
-      {required this.name,
+      {required this.shoeName,
       required this.brand,
       required this.description,
-      required this.price,
+      required this.average_price,
       required this.rating,
-      required this.productColors,
-      required this.productImages});
+      // required this.productColors,
+      required this.gender,
+      required this.thumbnail});
 }
