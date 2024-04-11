@@ -81,6 +81,12 @@ class _SignUpScreenState extends State<SignUpScreen>
                 //   hintText: 'Name',
                 //   prefixIcon: Icons.person,
                 // ),
+                PrimaryTextField(
+                  hintText: 'Email address',
+                  controller: emailController,
+                  prefixIcon: CupertinoIcons.mail_solid,
+                ),
+                24.heightBox,
                 24.heightBox,
                 PrimaryTextField(
                   hintText: 'Password',
@@ -89,12 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                   prefixIcon: CupertinoIcons.padlock,
                 ),
                 24.heightBox,
-                PrimaryTextField(
-                  hintText: 'Email address',
-                  controller: emailController,
-                  prefixIcon: CupertinoIcons.mail_solid,
-                ),
-                24.heightBox,
+
                 // const PrimaryTextField(
                 //   hintText: 'Phone',
                 //   prefixIcon: CupertinoIcons.phone_fill,

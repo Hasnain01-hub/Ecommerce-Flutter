@@ -164,15 +164,16 @@ class _LoginScreenState extends State<LoginScreen>
                                       decoration: TextDecoration.underline),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      // Navigator.of(context).pushNamed(SignUpScreen.id);
-                                      BlocProvider.of<AuthenticationBloc>(
-                                              context)
-                                          .add(
-                                        SignInUser(
-                                          emailController.text.trim(),
-                                          passwordController.text.trim(),
-                                        ),
-                                      );
+                                      Navigator.of(context)
+                                          .pushNamed(SignUpScreen.id);
+                                      // BlocProvider.of<AuthenticationBloc>(
+                                      //         context)
+                                      //     .add(
+                                      //   SignInUser(
+                                      //     emailController.text.trim(),
+                                      //     passwordController.text.trim(),
+                                      //   ),
+                                      // );
                                     }),
                             ]),
                           ),
