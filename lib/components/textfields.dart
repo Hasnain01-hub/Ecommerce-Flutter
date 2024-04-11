@@ -6,11 +6,13 @@ class PrimaryTextField extends StatefulWidget {
     this.hintText = '',
     this.prefixIcon,
     this.isObscure = false,
+    this.controller,
     Key? key,
   }) : super(key: key);
   final IconData? prefixIcon;
   final String hintText;
   final bool isObscure;
+  final TextEditingController? controller;
 
   @override
   State<PrimaryTextField> createState() => _PrimaryTextFieldState();
@@ -26,7 +28,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField> {
       child: TextFormField(
         validator: (v) {},
         obscureText: widget.isObscure,
-        controller: null,
+        controller: widget.controller,
         style: Theme.of(context)
             .textTheme
             .bodyText1!

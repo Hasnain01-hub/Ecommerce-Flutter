@@ -19,6 +19,8 @@ class UserDashboard extends StatefulWidget {
   @override
   _UserDashboardState createState() => _UserDashboardState();
 }
+// BlocProvider.of<AuthenticationBloc>(context)
+// .add(SignOut());
 
 class _UserDashboardState extends State<UserDashboard>
     with SingleTickerProviderStateMixin {
@@ -47,7 +49,7 @@ class _UserDashboardState extends State<UserDashboard>
         child: Container(),
         toggleDrawer: toggleDrawer,
       );
-  
+
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 

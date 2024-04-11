@@ -6,11 +6,13 @@ import 'package:ecommerce_app_isaatech/components/social_icon_buttons_row.dart';
 import 'package:ecommerce_app_isaatech/components/textfields.dart';
 import 'package:ecommerce_app_isaatech/constants/images.dart';
 import 'package:ecommerce_app_isaatech/screens/home/main_home.dart';
+import 'package:ecommerce_app_isaatech/service/authentication_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -40,9 +42,13 @@ class _SignUpScreenState extends State<SignUpScreen>
     });
   }
 
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   @override
   void dispose() {
     super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
     _blurAnimationController.dispose();
   }
 
@@ -71,32 +77,59 @@ class _SignUpScreenState extends State<SignUpScreen>
                 const Spacer(),
                 _buildTitleText(context),
                 const Spacer(),
-                const PrimaryTextField(
-                  hintText: 'Name',
-                  prefixIcon: Icons.person,
-                ),
+                // const PrimaryTextField(
+                //   hintText: 'Name',
+                //   prefixIcon: Icons.person,
+                // ),
                 24.heightBox,
-                const PrimaryTextField(
+                PrimaryTextField(
                   hintText: 'Password',
+                  controller: passwordController,
                   isObscure: true,
                   prefixIcon: CupertinoIcons.padlock,
                 ),
                 24.heightBox,
-                const PrimaryTextField(
+                PrimaryTextField(
                   hintText: 'Email address',
+                  controller: emailController,
                   prefixIcon: CupertinoIcons.mail_solid,
                 ),
                 24.heightBox,
-                const PrimaryTextField(
-                  hintText: 'Phone',
-                  prefixIcon: CupertinoIcons.phone_fill,
-                ),
+                // const PrimaryTextField(
+                //   hintText: 'Phone',
+                //   prefixIcon: CupertinoIcons.phone_fill,
+                // ),
                 const Spacer(),
-                AuthButton(
-                    text: 'Create',
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(UserDashboard.id);
-                    }),
+                BlocConsumer<AuthenticationBloc, AuthenticationState>(
+                    listener: (context, state) {
+                  if (state is AuthenticationSuccessState) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      UserDashboard.id,
+                      (route) => false,
+                    );
+                  } else if (state is AuthenticationFailureState) {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const AlertDialog(
+                            content: Text('error'),
+                          );
+                        });
+                  }
+                }, builder: (context, state) {
+                  return AuthButton(
+                      text: 'Create',
+                      onPressed: () {
+                        BlocProvider.of<AuthenticationBloc>(context).add(
+                          SignUpUser(
+                            emailController.text.trim(),
+                            passwordController.text.trim(),
+                          ),
+                        );
+                        // Navigator.of(context).pushNamed(UserDashboard.id);
+                      });
+                }),
                 const Spacer(),
                 Text('Or create account using social media',
                     style: TextStyle(
